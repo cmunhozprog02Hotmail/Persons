@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Persons.Data;
 using Persons.Models;
 using Persons.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Persons
 {
@@ -60,7 +61,8 @@ namespace Persons
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            IServiceProvider serviceProvider)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -92,6 +94,29 @@ namespace Persons
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+           // await CreateRoles(serviceProvider);
         }
+        /*
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleMagar = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userMagar = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            string[] rolesNames = { "Admin", "User" };
+            IdentityResult result;
+
+            foreach(var rolesName in rolesNames)
+            {
+                var roleExist = await roleMagar.RoleExistsAsync(rolesName);
+                
+                if (!roleExist)
+                {
+                    result = await roleMagar.CreateAsync(new IdentityRole(rolesName));
+                }
+            }
+            var user = await userMagar.FindByIdAsync("4594bbcb-09b1-4fb4-b5ed-5cb7c1bf3d5d");
+            await userMagar.AddToRoleAsync(user, "Admin");
+        }
+        */
     }
 }
