@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Persons.Models;
 using Persons.Models.AccountViewModels;
 using Persons.Services;
+using Persons.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Persons.Controllers
 {
@@ -22,19 +24,25 @@ namespace Persons.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ApplicationDbContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
+            _roleManager = roleManager;
         }
 
         //
@@ -93,6 +101,7 @@ namespace Persons.Controllers
         public IActionResult Register(string returnUrl = null)
         {
             RegisterViewModel R = new RegisterViewModel();
+            R.getRoles(_roleManager);
             ViewData["ReturnUrl"] = returnUrl;
             return View(R);
         }
@@ -109,6 +118,7 @@ namespace Persons.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.AddToRoleAsync(user, model.Role);
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713

@@ -24,5 +24,11 @@ namespace Persons.Data
         }
 
         public DbSet<PersonsData> PersonsData { get; set; }
+        //public DbSet<IdentityRole> identityRole { get; set; }
+
+        public static implicit operator ApplicationDbContext(ApplicationUser v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

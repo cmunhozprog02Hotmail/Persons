@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Persons.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,21 +33,24 @@ namespace Persons.Models.AccountViewModels
         [UIHint("List")]
         public List<SelectListItem> Roles { get; set; }
         public string Role { get; set; }
+        private UsersRoles userRoles;
 
         public RegisterViewModel()
         {
             Roles = new List<SelectListItem>();
-            Roles.Add(new SelectListItem()
-            {
-                Value = "1",
-                Text = "Admin"
-            });
-            Roles.Add(new SelectListItem()
-            {
-                Value = "2",
-                Text = "User"
-            });
-              
+            userRoles = new UsersRoles();
+           
+        }
+
+        public void getRoles(RoleManager<IdentityRole> roleManager)
+        {
+            Roles = userRoles.getRoles(roleManager);
+
+        }
+
+        internal void getRoles(object context)
+        {
+            throw new NotImplementedException();
         }
     }
 }
